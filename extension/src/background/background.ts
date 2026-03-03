@@ -18,18 +18,33 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 });
 
 async function analyzeArticle(articleData: any) {
-  // TODO: Replace with actual API call to backend
-  // For now, return mock data
+  const API_URL = 'http://localhost:8000/analyze';
 
   console.log('Analyzing article:', articleData);
 
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  try {
+    // Call real backend API
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(articleData),
+    });
 
-  // Generate mock analysis based on domain
-  const mockData = generateMockAnalysis(articleData.domain, articleData.title);
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}`);
+    }
 
-  return mockData;
+    const result = await response.json();
+    console.log('API response:', result);
+    return result;
+
+  } catch (error) {
+    // Fallback to mock data if API is not available
+    console.warn('API call failed, using mock data:', error);
+    return generateMockAnalysis(articleData.domain, articleData.title);
+  }
 }
 
 function generateMockAnalysis(domain: string, title: string) {
