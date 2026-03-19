@@ -10,6 +10,7 @@ interface AnalysisResult {
   };
   domain: string;
   title: string;
+  reasons: string[];
 }
 
 function App() {
@@ -83,6 +84,13 @@ function App() {
                result.credibilityScore >= 40 ? 'Moderate credibility' :
                'Low credibility'}
             </p>
+            {result.reasons && result.reasons.length > 0 && (
+              <ul className="reasons-list">
+                {result.reasons.map((reason, i) => (
+                  <li key={i}>{reason}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Bias Spectrum Panel */}

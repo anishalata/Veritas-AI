@@ -1,11 +1,26 @@
 // Background Service Worker for Veritas AI
 console.log('Veritas AI background service worker loaded');
 
+// Cache results per URL so we don't hit the API twice for the same article
+const analysisCache: Record<string, any> = {};
+
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === 'analyzeArticle') {
+    const url = request.data?.url;
+
+    // Return cached result if we already analyzed this URL
+    if (url && analysisCache[url]) {
+      console.log('Returning cached result for:', url);
+      sendResponse(analysisCache[url]);
+      return true;
+    }
+
     analyzeArticle(request.data)
-      .then(result => sendResponse(result))
+      .then(result => {
+        if (url) analysisCache[url] = result;
+        sendResponse(result);
+      })
       .catch(error => {
         console.error('Error analyzing article:', error);
         sendResponse({

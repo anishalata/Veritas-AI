@@ -39,6 +39,7 @@ class AnalysisResponse(BaseModel):
     coverage: dict
     domain: str
     title: str
+    reasons: list
     metadata: dict
 
 @app.get("/")
@@ -63,8 +64,7 @@ async def analyze_article(article: ArticleRequest):
     """
     from services.analyzer import analyze_article_content
 
-    result = await analyze_article_content(article)
-    return result
+    return await analyze_article_content(article)
 
 if __name__ == "__main__":
     import uvicorn
