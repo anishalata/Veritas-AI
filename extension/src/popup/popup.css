@@ -5,56 +5,52 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  width: 380px;
-  min-height: 500px;
+  width: 360px;
   background: #f5f7fa;
 }
 
 .popup-container {
-  padding: 20px;
+  padding: 16px;
 }
 
+/* Header */
 .header {
   text-align: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #e1e8ed;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e1e8ed;
 }
 
 .header h1 {
-  font-size: 24px;
+  font-size: 20px;
   color: #1a1a2e;
-  margin-bottom: 5px;
+  margin-bottom: 2px;
 }
 
 .tagline {
-  font-size: 12px;
-  color: #666;
-  font-weight: 500;
+  font-size: 11px;
+  color: #888;
 }
 
+/* Analyze button */
 .analyze-btn {
   width: 100%;
-  padding: 14px;
+  padding: 11px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  margin-bottom: 20px;
+  transition: opacity 0.2s;
+  margin-bottom: 14px;
 }
 
 .analyze-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  opacity: 0.9;
 }
 
 .analyze-btn:disabled {
@@ -62,83 +58,117 @@ body {
   cursor: not-allowed;
 }
 
+/* Results */
 .results {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
-.article-info {
+.article-domain {
+  font-size: 11px;
+  color: #667eea;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Score row */
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   background: white;
-  padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 14px 16px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
 }
 
-.article-info h3 {
-  font-size: 14px;
+.score-big {
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.score-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.score-label-text {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.score-sub {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+/* Reasons */
+.reasons-text {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.6;
+  background: white;
+  padding: 12px 14px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+/* Accordion panels */
+.accordion {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
   color: #1a1a2e;
-  margin-bottom: 5px;
-  line-height: 1.4;
+  text-align: left;
 }
 
-.domain {
+.accordion-header:hover {
+  background: #f9f9f9;
+}
+
+.accordion-value {
+  margin-left: auto;
   font-size: 12px;
   color: #667eea;
   font-weight: 500;
 }
 
-.panel {
-  background: white;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.chevron {
+  font-size: 10px;
+  color: #aaa;
 }
 
-.panel h2 {
-  font-size: 14px;
-  color: #1a1a2e;
-  margin-bottom: 12px;
-  font-weight: 600;
+.accordion-body {
+  padding: 4px 14px 14px;
+  border-top: 1px solid #f0f0f0;
 }
 
-/* Credibility Score Panel */
-.score-circle {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  margin: 15px 0;
-}
-
-.score-value {
-  font-size: 48px;
-  font-weight: bold;
-  color: #667eea;
-}
-
-.score-label {
-  font-size: 20px;
-  color: #999;
-  margin-left: 5px;
-}
-
-.score-description {
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-}
-
-/* Bias Spectrum Panel */
-.bias-meter {
-  margin: 15px 0;
-}
-
+/* Bias */
 .bias-bar {
   position: relative;
   height: 8px;
   background: linear-gradient(to right, #3b82f6, #e5e7eb, #ef4444);
   border-radius: 4px;
-  margin-bottom: 8px;
+  margin: 10px 0 6px;
 }
 
 .bias-indicator {
@@ -150,70 +180,78 @@ body {
   border-radius: 50%;
   transform: translateX(-50%);
   border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .bias-labels {
   display: flex;
   justify-content: space-between;
+  font-size: 10px;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.bias-note {
   font-size: 11px;
-  color: #666;
+  color: #888;
+  line-height: 1.5;
+  margin-top: 8px;
 }
 
-.bias-rating {
-  text-align: center;
-  font-weight: 600;
-  color: #1a1a2e;
-  margin-top: 10px;
+.coverage-note {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.5;
+  margin-bottom: 10px;
 }
 
-/* Coverage Breakdown Panel */
-.coverage-bars {
+/* Coverage bubbles */
+.coverage-bubbles {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.coverage-bubble {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.coverage-item {
-  display: grid;
-  grid-template-columns: 120px 1fr 40px;
   align-items: center;
-  gap: 8px;
-}
-
-.coverage-label {
-  font-size: 12px;
-  color: #666;
-}
-
-.coverage-bar-container {
-  height: 20px;
-  background: #e5e7eb;
+  gap: 4px;
+  padding: 12px 18px;
   border-radius: 10px;
-  overflow: hidden;
+  min-width: 72px;
 }
 
-.coverage-bar {
-  height: 100%;
-  border-radius: 10px;
-  transition: width 0.3s ease;
+.coverage-bubble.left {
+  background: #dbeafe;
 }
 
-.coverage-bar.left {
-  background: #3b82f6;
+.coverage-bubble.center {
+  background: #f3f4f6;
 }
 
-.coverage-bar.center {
-  background: #8b5cf6;
+.coverage-bubble.right {
+  background: #fee2e2;
 }
 
-.coverage-bar.right {
-  background: #ef4444;
+.bubble-percent {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
 }
 
-.coverage-percent {
-  font-size: 12px;
+.coverage-bubble.left .bubble-percent { color: #1d4ed8; }
+.coverage-bubble.center .bubble-percent { color: #6b7280; }
+.coverage-bubble.right .bubble-percent { color: #dc2626; }
+
+.bubble-label {
+  font-size: 11px;
   font-weight: 600;
-  color: #1a1a2e;
-  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
+
+.coverage-bubble.left .bubble-label { color: #1d4ed8; }
+.coverage-bubble.center .bubble-label { color: #6b7280; }
+.coverage-bubble.right .bubble-label { color: #dc2626; }

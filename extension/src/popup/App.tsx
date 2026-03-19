@@ -16,11 +16,13 @@ interface AnalysisResult {
 function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const handleAnalyze = async () => {
     setLoading(true);
+    setResult(null);
+    setExpanded(null);
 
-    // Get current tab
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     if (!tab.id) {
@@ -28,13 +30,11 @@ function App() {
       return;
     }
 
-    // Send message to content script to extract article
     chrome.tabs.sendMessage(
       tab.id,
       { action: 'extractArticle' },
       (response) => {
         if (response && response.success) {
-          // Send to background for analysis (currently returns mock data)
           chrome.runtime.sendMessage(
             { action: 'analyzeArticle', data: response.data },
             (analysisResult) => {
@@ -49,6 +49,19 @@ function App() {
       }
     );
   };
+
+  const toggle = (panel: string) => {
+    setExpanded(expanded === panel ? null : panel);
+  };
+
+  const scoreColor = (score: number) =>
+    score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444';
+
+  const scoreLabel = (score: number) =>
+    score >= 70 ? 'High Credibility' : score >= 40 ? 'Moderate Credibility' : 'Low Credibility';
+
+  const reasonsSentence = (reasons: string[]) =>
+    reasons.length > 0 ? reasons.join('. ') + '.' : '';
 
   return (
     <div className="popup-container">
@@ -67,88 +80,81 @@ function App() {
 
       {result && (
         <div className="results">
-          <div className="article-info">
-            <h3>{result.title}</h3>
-            <p className="domain">{result.domain}</p>
+          <p className="article-domain">Source: {result.domain.replace('www.', '').split('.')[0].toUpperCase()}</p>
+
+          {/* Credibility Score — always visible */}
+          <div className="score-row">
+            <span className="score-big" style={{ color: scoreColor(result.credibilityScore) }}>
+              {result.credibilityScore}
+            </span>
+            <div className="score-meta">
+              <span className="score-label-text" style={{ color: scoreColor(result.credibilityScore) }}>
+                {scoreLabel(result.credibilityScore)}
+              </span>
+              <div className="score-sub">out of 100</div>
+            </div>
           </div>
 
-          {/* Credibility Score Panel */}
-          <div className="panel credibility-panel">
-            <h2>Credibility Score</h2>
-            <div className="score-circle">
-              <span className="score-value">{result.credibilityScore}</span>
-              <span className="score-label">/100</span>
-            </div>
-            <p className="score-description">
-              {result.credibilityScore >= 70 ? 'High credibility' :
-               result.credibilityScore >= 40 ? 'Moderate credibility' :
-               'Low credibility'}
-            </p>
-            {result.reasons && result.reasons.length > 0 && (
-              <ul className="reasons-list">
-                {result.reasons.map((reason, i) => (
-                  <li key={i}>{reason}</li>
-                ))}
-              </ul>
+          {/* Reasons — sentence form */}
+          {result.reasons && result.reasons.length > 0 && (
+            <p className="reasons-text">{reasonsSentence(result.reasons)}</p>
+          )}
+
+          {/* Expandable: Bias */}
+          <div className="accordion">
+            <button className="accordion-header" onClick={() => toggle('bias')}>
+              <span>Bias Spectrum</span>
+              <span className="accordion-value">{result.biasRating}</span>
+              <span className="chevron">{expanded === 'bias' ? '▲' : '▼'}</span>
+            </button>
+            {expanded === 'bias' && (
+              <div className="accordion-body">
+                <div className="bias-bar">
+                  <div className="bias-indicator" style={{
+                    left: result.biasRating === 'Left' ? '10%' :
+                          result.biasRating === 'Center-Left' ? '30%' :
+                          result.biasRating === 'Center' ? '50%' :
+                          result.biasRating === 'Center-Right' ? '70%' : '90%'
+                  }}></div>
+                </div>
+                <div className="bias-labels">
+                  <span>Left</span>
+                  <span>Center</span>
+                  <span>Right</span>
+                </div>
+                <p className="bias-note">This outlet is typically rated <strong>{result.biasRating}</strong> by Media Bias/Fact Check. This reflects the source's overall political lean, not the specific article.</p>
+              </div>
             )}
           </div>
 
-          {/* Bias Spectrum Panel */}
-          <div className="panel bias-panel">
-            <h2>Bias Spectrum</h2>
-            <div className="bias-meter">
-              <div className="bias-bar">
-                <div className="bias-indicator" style={{
-                  left: result.biasRating === 'Left' ? '10%' :
-                        result.biasRating === 'Center-Left' ? '30%' :
-                        result.biasRating === 'Center' ? '50%' :
-                        result.biasRating === 'Center-Right' ? '70%' : '90%'
-                }}></div>
-              </div>
-              <div className="bias-labels">
-                <span>Left</span>
-                <span>Center</span>
-                <span>Right</span>
-              </div>
-            </div>
-            <p className="bias-rating">{result.biasRating}</p>
-          </div>
-
-          {/* Coverage Breakdown Panel */}
-          <div className="panel coverage-panel">
-            <h2>Coverage Breakdown</h2>
-            <div className="coverage-bars">
-              <div className="coverage-item">
-                <span className="coverage-label">Left-leaning sources</span>
-                <div className="coverage-bar-container">
-                  <div
-                    className="coverage-bar left"
-                    style={{ width: `${result.coverage.left}%` }}
-                  ></div>
+          {/* Expandable: Coverage */}
+          <div className="accordion">
+            <button className="accordion-header" onClick={() => toggle('coverage')}>
+              <span>Coverage Breakdown</span>
+              <span className="accordion-value">{result.coverage.left}L / {result.coverage.center}C / {result.coverage.right}R</span>
+              <span className="chevron">{expanded === 'coverage' ? '▲' : '▼'}</span>
+            </button>
+            {expanded === 'coverage' && (
+              <div className="accordion-body">
+                <p className="coverage-note">
+                  Of the outlets covering this story, {result.coverage.left}% lean left, {result.coverage.center}% are center, and {result.coverage.right}% lean right.
+                </p>
+                <div className="coverage-bubbles">
+                  <div className="coverage-bubble left">
+                    <span className="bubble-percent">{result.coverage.left}%</span>
+                    <span className="bubble-label">Left</span>
+                  </div>
+                  <div className="coverage-bubble center">
+                    <span className="bubble-percent">{result.coverage.center}%</span>
+                    <span className="bubble-label">Center</span>
+                  </div>
+                  <div className="coverage-bubble right">
+                    <span className="bubble-percent">{result.coverage.right}%</span>
+                    <span className="bubble-label">Right</span>
+                  </div>
                 </div>
-                <span className="coverage-percent">{result.coverage.left}%</span>
               </div>
-              <div className="coverage-item">
-                <span className="coverage-label">Center sources</span>
-                <div className="coverage-bar-container">
-                  <div
-                    className="coverage-bar center"
-                    style={{ width: `${result.coverage.center}%` }}
-                  ></div>
-                </div>
-                <span className="coverage-percent">{result.coverage.center}%</span>
-              </div>
-              <div className="coverage-item">
-                <span className="coverage-label">Right-leaning sources</span>
-                <div className="coverage-bar-container">
-                  <div
-                    className="coverage-bar right"
-                    style={{ width: `${result.coverage.right}%` }}
-                  ></div>
-                </div>
-                <span className="coverage-percent">{result.coverage.right}%</span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       )}
