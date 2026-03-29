@@ -58,6 +58,30 @@ body {
   cursor: not-allowed;
 }
 
+/* Not a news article banner */
+.not-news-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 4px;
+}
+
+.not-news-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.not-news-banner p {
+  font-size: 13px;
+  color: #92400e;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 /* Results */
 .results {
   display: flex;

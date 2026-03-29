@@ -40,6 +40,8 @@ class AnalysisResponse(BaseModel):
     domain: str
     title: str
     reasons: list
+    isNewsArticle: bool = True
+    detectionMessage: str = ""
     metadata: dict
 
 @app.get("/")

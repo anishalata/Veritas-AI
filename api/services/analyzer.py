@@ -10,6 +10,7 @@ from .source_credibility import get_source_credibility, get_source_bias
 from .coverage import get_coverage_breakdown
 from .ml_model import predict_credibility
 from .heuristics import analyze_heuristics
+from .article_detector import is_news_article
 
 
 async def analyze_article_content(article) -> Dict:
@@ -19,6 +20,21 @@ async def analyze_article_content(article) -> Dict:
     Returns:
         Dictionary with credibilityScore, biasRating, coverage, reasons, etc.
     """
+
+    # 0. Check if content is actually a news article
+    is_news, detection_message = await is_news_article(article.title, article.textContent)
+    if not is_news:
+        return {
+            "credibilityScore": 0,
+            "biasRating": "Unknown",
+            "coverage": {"left": 0, "center": 0, "right": 0},
+            "domain": article.domain,
+            "title": article.title[:100],
+            "reasons": [],
+            "isNewsArticle": False,
+            "detectionMessage": detection_message,
+            "metadata": {},
+        }
 
     # 1. Source credibility from database
     source_cred = get_source_credibility(article.domain)
@@ -56,6 +72,8 @@ async def analyze_article_content(article) -> Dict:
         "domain": article.domain,
         "title": article.title[:100],
         "reasons": reasons,
+        "isNewsArticle": True,
+        "detectionMessage": "",
         "metadata": {
             "sourceCredibility": source_cred,
             "mlScore": ml_score,

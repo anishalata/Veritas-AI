@@ -11,17 +11,21 @@ interface AnalysisResult {
   domain: string;
   title: string;
   reasons: string[];
+  isNewsArticle: boolean;
+  detectionMessage: string;
 }
 
 function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [extractError, setExtractError] = useState(false);
 
   const handleAnalyze = async () => {
     setLoading(true);
     setResult(null);
     setExpanded(null);
+    setExtractError(false);
 
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
@@ -43,8 +47,8 @@ function App() {
             }
           );
         } else {
+          setExtractError(true);
           setLoading(false);
-          alert('Could not extract article content from this page.');
         }
       }
     );
@@ -78,7 +82,21 @@ function App() {
         {loading ? 'Analyzing...' : 'Analyze Article'}
       </button>
 
-      {result && (
+      {extractError && (
+        <div className="not-news-banner">
+          <span className="not-news-icon">⚠️</span>
+          <p>Could not extract article content from this page.</p>
+        </div>
+      )}
+
+      {result && !result.isNewsArticle && (
+        <div className="not-news-banner">
+          <span className="not-news-icon">⚠️</span>
+          <p>This isn't a news article, so we can't analyze it.</p>
+        </div>
+      )}
+
+      {result && result.isNewsArticle && (
         <div className="results">
           <p className="article-domain">Source: {result.domain.replace('www.', '').split('.')[0].toUpperCase()}</p>
 
