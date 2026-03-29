@@ -22,7 +22,7 @@ async def analyze_article_content(article) -> Dict:
     """
 
     # 0. Check if content is actually a news article
-    is_news, detection_message = await is_news_article(article.title, article.textContent)
+    is_news, detection_message = await is_news_article(article.title, article.textContent, article.domain)
     if not is_news:
         return {
             "credibilityScore": 0,
