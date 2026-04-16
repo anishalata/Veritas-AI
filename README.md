@@ -1,169 +1,149 @@
 # Veritas AI
 
-An AI-powered Chrome extension for fake news detection and media bias analysis.
+An AI-powered Chrome extension that analyzes news articles for credibility, political bias, and media coverage in real time.
 
-## Project Overview
+## What It Does
 
-Veritas AI helps users evaluate the credibility and bias of online news articles in real-time. The extension analyzes articles and provides:
-
-- **Credibility Score** (0-100): Overall trustworthiness assessment
+- **Credibility Score** (0–100): Combines source reputation, ML model, and heuristic signals
 - **Bias Spectrum**: Political leaning classification (Left to Right)
-- **Coverage Breakdown**: Distribution of sources across the political spectrum
+- **Coverage Breakdown**: How many left/center/right outlets are covering the same story
+- **Non-Article Detection**: Automatically detects if the page is not a news article and tells you why
 
-## Current Status: Phase 0 & 1 ✅
+## Setup
 
-**Completed:**
-- ✅ Chrome Extension skeleton (Manifest V3)
-- ✅ React + TypeScript popup UI
-- ✅ Article extraction with Mozilla Readability
-- ✅ Background service worker architecture
-- ✅ Mock data pipeline
+### 1. Clone the repo
 
-**Currently Using Mock Data** - Real AI analysis coming in Phase 2-3
+```bash
+git clone https://github.com/anishsparida/veritas-ai.git
+cd veritas-ai
+```
+
+### 2. Set up the API
+
+```bash
+cd api
+pip install -r requirements.txt
+```
+
+Create a `.env` file inside the `api/` folder:
+
+```
+NEWSAPI_KEY=your_newsapi_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+
+HOST=0.0.0.0
+PORT=8000
+```
+
+- Get a NewsAPI key at [newsapi.org](https://newsapi.org)
+- Get an OpenAI key at [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+### 3. Run the API
+
+```bash
+cd api
+uvicorn main:app --reload
+```
+
+The API runs at `http://localhost:8000`. Keep this terminal open.
+
+### 4. Build the extension
+
+Open a new terminal:
+
+```bash
+cd extension
+npm install
+npm run build
+```
+
+### 5. Load in Chrome
+
+1. Open Chrome and go to `chrome://extensions/`
+2. Enable **Developer mode** (toggle in top-right corner)
+3. Click **Load unpacked**
+4. Select the `extension/dist/` folder
+5. Veritas AI will appear in your extensions list
+
+### 6. Use it
+
+1. Navigate to any news article (CNN, BBC, AP News, etc.)
+2. Click the Veritas AI extension icon in your Chrome toolbar
+3. Click **Analyze Article**
+
+## After Making Code Changes
+
+Any time you edit the extension code, rebuild and reload:
+
+```bash
+cd extension
+npm run build
+```
+
+Then go to `chrome://extensions/` and click the reload icon on the Veritas AI card.
+
+If you edit the API code, `uvicorn --reload` picks up changes automatically.
 
 ## How It Works
 
-### Current Architecture (Phase 1)
-
 ```
-┌──────────────┐
-│   Browser    │
-│  (Any Site)  │
-└──────┬───────┘
-       │
-       │ User clicks extension icon
-       ▼
-┌──────────────────────────────────────┐
-│     Veritas AI Extension             │
-│  ┌────────────────────────────────┐  │
-│  │  Popup UI (React)              │  │
-│  │  - Analyze button              │  │
-│  │  - Results panels              │  │
-│  └───────┬────────────────────────┘  │
-│          │                            │
-│          │ (1) Request extraction     │
-│          ▼                            │
-│  ┌────────────────────────────────┐  │
-│  │  Content Script                │  │
-│  │  - Mozilla Readability         │  │
-│  │  - Extracts article content    │  │
-│  └───────┬────────────────────────┘  │
-│          │                            │
-│          │ (2) Send article data      │
-│          ▼                            │
-│  ┌────────────────────────────────┐  │
-│  │  Service Worker                │  │
-│  │  - Currently: mock data        │  │
-│  │  - Future: API calls           │  │
-│  └────────────────────────────────┘  │
-└──────────────────────────────────────┘
+Browser Tab
+    │
+    │ User clicks Analyze
+    ▼
+Content Script (Mozilla Readability)
+    │ Extracts title, text, domain
+    │ Falls back to tab title if extraction fails
+    ▼
+Background Service Worker
+    │ Sends article data to API
+    ▼
+FastAPI Backend (localhost:8000)
+    │
+    ├── OpenAI (gpt-4o-mini) → Is this a news article?
+    │       If NO → return content type label (SOCIAL_MEDIA, PRODUCT, VIDEO, etc.)
+    │
+    ├── Source Credibility DB → score based on domain
+    ├── ML Model → fake/real prediction
+    ├── Heuristics → sensational language, attribution, length
+    └── NewsAPI → coverage across left/center/right outlets
+    │
+    ▼
+Extension Popup
+    Displays score, bias, coverage — or explains why it can't analyze the page
 ```
-
-### Future Architecture (Phase 2-3)
-
-```
-┌──────────────────────────────────────┐
-│     Veritas AI Extension             │
-│  (Chrome Browser)                    │
-└───────────────┬──────────────────────┘
-                │
-                │ HTTPS API Request
-                ▼
-┌──────────────────────────────────────┐
-│     Backend API (FastAPI)            │
-│  ┌────────────────────────────────┐  │
-│  │  Analysis Pipeline             │  │
-│  │  1. Source credibility check   │  │
-│  │  2. Bias classification        │  │
-│  │  3. Cross-reference validation │  │
-│  └────────┬───────────────────────┘  │
-│           │                           │
-│           ▼                           │
-│  ┌────────────────────────────────┐  │
-│  │  ML Model (LLM)                │  │
-│  │  - Credibility scoring         │  │
-│  │  - Bias detection              │  │
-│  │  - Claim verification          │  │
-│  └────────┬───────────────────────┘  │
-│           │                           │
-│           ▼                           │
-│  ┌────────────────────────────────┐  │
-│  │  External Data Sources         │  │
-│  │  - NewsAPI / GDELT             │  │
-│  │  - Fact-check databases        │  │
-│  │  - Source reputation DB        │  │
-│  └────────────────────────────────┘  │
-└──────────────────────────────────────┘
-```
-
-### Analysis Flow
-
-1. **User opens article** → Extension icon activates
-2. **User clicks "Analyze"** → Content script extracts article using Readability
-3. **Article sent to service worker** → Forwards to backend API
-4. **Backend analyzes**:
-   - Checks source credibility against database
-   - ML model scores article content
-   - Cross-references claims with fact-check databases
-   - Analyzes political bias indicators
-5. **Results returned** → Displayed in three panels (Credibility, Bias, Coverage)
 
 ## Project Structure
 
 ```
 veritas-ai/
-├── extension/      # Chrome extension (React + TypeScript)
-├── api/           # Backend API (TODO: FastAPI)
-├── model/         # ML models (TODO: Fine-tuned LLM)
-├── docs/          # Documentation
-└── README.md
+├── api/
+│   ├── main.py                      # FastAPI app, /analyze endpoint
+│   ├── requirements.txt
+│   ├── .env                         # Your API keys (never commit this)
+│   └── services/
+│       ├── analyzer.py              # Orchestrates all analysis steps
+│       ├── article_detector.py      # OpenAI-based news article classifier
+│       ├── source_credibility.py    # Source credibility + bias database
+│       ├── heuristics.py            # Rule-based credibility signals
+│       ├── ml_model.py              # ML model prediction
+│       └── coverage.py              # NewsAPI political coverage breakdown
+└── extension/
+    ├── src/
+    │   ├── popup/
+    │   │   ├── App.tsx              # Main popup UI
+    │   │   └── popup.css
+    │   ├── content/
+    │   │   └── content.ts           # Article extraction (Readability)
+    │   └── background/
+    │       └── background.ts        # Service worker, API calls
+    └── public/
+        └── manifest.json
+
 ```
-
-## Quick Start
-
-See [docs/SETUP.md](docs/SETUP.md) for detailed setup instructions.
-
-**TL;DR:**
-```bash
-cd extension
-npm install
-npm run build
-# Load extension/dist/ in Chrome
-```
-
-## Roadmap
-
-- [x] **Phase 0:** Project setup and planning
-- [x] **Phase 1:** Chrome extension skeleton with mock data
-- [ ] **Phase 2:** Backend API (FastAPI + PostgreSQL)
-- [ ] **Phase 3:** ML model integration (LLM fine-tuning)
-- [ ] **Phase 4:** Real-time fact checking
-- [ ] **Phase 5:** Cross-reference validation
-- [ ] **Phase 6:** User feedback and iteration
 
 ## Tech Stack
 
-### Extension (Current)
-- React + TypeScript
-- Vite (bundler)
-- Chrome Manifest V3
-- Mozilla Readability
-
-### Backend (Planned)
-- FastAPI
-- PostgreSQL
-- Redis (caching)
-- NewsAPI / GDELT
-
-### ML (Planned)
-- Fine-tuned LLM (GPT-4 or open-source alternative)
-- Vector embeddings for semantic search
-- Bias detection model
-
-## Contributing
-
-This is currently a solo project in active development. Stay tuned for contribution guidelines!
-
-## License
-
-TBD
+- **Extension**: React, TypeScript, Vite, Chrome Manifest V3, Mozilla Readability
+- **Backend**: FastAPI, Python, httpx
+- **APIs**: OpenAI (gpt-4o-mini), NewsAPI

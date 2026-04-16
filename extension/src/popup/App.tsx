@@ -47,8 +47,24 @@ function App() {
             }
           );
         } else {
-          setExtractError(true);
-          setLoading(false);
+          // Extraction failed — still try to classify using tab title/domain
+          const domain = new URL(tab.url!).hostname.replace('www.', '');
+          chrome.runtime.sendMessage(
+            { action: 'analyzeArticle', data: {
+              domain,
+              title: tab.title || '',
+              textContent: '',
+              url: tab.url
+            }},
+            (analysisResult) => {
+              if (analysisResult && !analysisResult.isNewsArticle) {
+                setResult(analysisResult);
+              } else {
+                setExtractError(true);
+              }
+              setLoading(false);
+            }
+          );
         }
       }
     );
@@ -92,7 +108,7 @@ function App() {
       {result && !result.isNewsArticle && (
         <div className="not-news-banner">
           <span className="not-news-icon">⚠️</span>
-          <p>This isn't a news article, so we can't analyze it.</p>
+          <p>{result.detectionMessage}</p>
         </div>
       )}
 
