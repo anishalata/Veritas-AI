@@ -22,7 +22,15 @@ cd veritas-ai
 
 ```bash
 cd api
-pip install -r requirements.txt
+```
+
+Install dependencies — use whichever command works for your setup:
+
+```bash
+pip install -r requirements.txt       # most common
+pip3 install -r requirements.txt      # if pip points to Python 2
+python -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 Create a `.env` file inside the `api/` folder:
