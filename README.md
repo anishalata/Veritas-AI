@@ -33,6 +33,17 @@ python -m pip install -r requirements.txt
 python3 -m pip install -r requirements.txt
 ```
 
+**If you get an "externally managed environment" error (common on Mac with Homebrew), create a virtual environment first:**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate        # Mac/Linux
+venv\Scripts\activate           # Windows
+pip install -r requirements.txt
+```
+
+You'll need to run `source venv/bin/activate` each time you open a new terminal before starting the API.
+
 Create a `.env` file inside the `api/` folder:
 
 ```
