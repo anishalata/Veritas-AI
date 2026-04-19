@@ -15,7 +15,7 @@ An AI-powered Chrome extension that analyzes news articles for credibility, poli
 
 ```bash
 git clone https://github.com/anishalata/Veritas-AI
-cd veritas-ai
+cd Veritas-AI
 ```
 
 ### 2. Set up the API
@@ -56,7 +56,6 @@ PORT=8000
 ### 3. Run the API
 
 ```bash
-cd api
 uvicorn main:app --reload
 ```
 
@@ -67,7 +66,7 @@ The API runs at `http://localhost:8000`. Keep this terminal open.
 Open a new terminal:
 
 ```bash
-cd extension
+cd Veritas-AI/extension
 npm install
 npm run build
 ```
