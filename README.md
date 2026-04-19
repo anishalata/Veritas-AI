@@ -24,25 +24,21 @@ cd veritas-ai
 cd api
 ```
 
-Install dependencies — use whichever command works for your setup:
-
-```bash
-pip install -r requirements.txt       # most common
-pip3 install -r requirements.txt      # if pip points to Python 2
-python -m pip install -r requirements.txt
-python3 -m pip install -r requirements.txt
-```
-
-**If you get an "externally managed environment" error (common on Mac with Homebrew), create a virtual environment first:**
+Create and activate a virtual environment:
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate        # Mac/Linux
 venv\Scripts\activate           # Windows
-pip install -r requirements.txt
 ```
 
 You'll need to run `source venv/bin/activate` each time you open a new terminal before starting the API.
+
+Then install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
 
 Create a `.env` file inside the `api/` folder:
 
