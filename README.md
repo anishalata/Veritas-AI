@@ -21,9 +21,9 @@ Before starting, make sure you have the following installed:
 
 ### Shell to use
 
-All commands below should be run in a terminal / shell:
-- **Mac**: Use the built-in **Terminal** app
-- **Windows**: Use **Git Bash** (installed with Git above) — do NOT use Command Prompt or PowerShell
+We recommend using the **VS Code terminal** (View → Terminal) since you can create and edit the `.env` file directly in the editor. 
+
+- **Windows**: Make sure the VS Code terminal is set to **Git Bash** — do NOT use Command Prompt or PowerShell
 
 ---
 
