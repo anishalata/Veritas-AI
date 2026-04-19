@@ -9,6 +9,24 @@ An AI-powered Chrome extension that analyzes news articles for credibility, poli
 - **Coverage Breakdown**: How many left/center/right outlets are covering the same story
 - **Non-Article Detection**: Automatically detects if the page is not a news article and tells you why
 
+## Prerequisites
+
+Before starting, make sure you have the following installed:
+
+- **Python 3.9+** — [Download here](https://www.python.org/downloads/). During installation on Windows, check the box that says **"Add Python to PATH"**.
+- **Node.js** — [Download here](https://nodejs.org/). This also installs `npm` which you will need.
+- **Git** — [Download here](https://git-scm.com/downloads).
+- **VS Code** (recommended) — [Download here](https://code.visualstudio.com/).
+- **Google Chrome** — The extension only works in Chrome.
+
+### Shell to use
+
+All commands below should be run in a terminal / shell:
+- **Mac**: Use the built-in **Terminal** app
+- **Windows**: Use **Git Bash** (installed with Git above) — do NOT use Command Prompt or PowerShell
+
+---
+
 ## Setup
 
 ### 1. Clone the repo
