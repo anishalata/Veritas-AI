@@ -36,6 +36,8 @@ git clone https://github.com/anishalata/Veritas-AI
 cd Veritas-AI
 ```
 
+Then open the folder in VS Code: **File → Open Folder** and select the `Veritas-AI` folder. Open the terminal inside VS Code with **View → Terminal** before continuing.
+
 ### 2. Set up the API
 
 ```bash
