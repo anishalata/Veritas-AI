@@ -89,6 +89,8 @@ npm install
 npm run build
 ```
 
+> If you are already inside the `Veritas-AI` folder, just run `cd extension` instead.
+
 ### 5. Load in Chrome
 
 1. Open Chrome and go to `chrome://extensions/`
